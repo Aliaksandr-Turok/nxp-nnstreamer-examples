@@ -24,5 +24,9 @@ function gst_exec_detection {
     t. ! queue name=thread-img max-size-buffers=2 leaky=2 ! \
       videoconvert ! \
       ${VIDEO_MIXER} \
-      autovideosink
+      queue max-size-buffers=1 leaky=downstream ! \
+      vpuenc_h264 ! \
+      video/x-h264, stream-format=byte-stream ! \
+      rtph264pay ! \
+      udpsink host=192.168.100.23 port=5000
 }

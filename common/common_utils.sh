@@ -13,33 +13,11 @@ function error {
 # setup environment
 function setup_env {
   # detect i.MX in use
-  local UNAME=$(uname -a)
-  if [[ "${UNAME}" =~ "imx8mp" ]]; then
-    IMX="IMX8MP"
-    # Store on disk .nb files that contains the result of the OpenVX graph compilation
-    # This feature is only available for iMX8MPlus to get the warmup time only once
-    export VIV_VX_ENABLE_CACHE_GRAPH_BINARY="1"
-    export VIV_VX_CACHE_BINARY_GRAPH_DIR=$HOME
-  fi
-  if [[ "${UNAME}" =~ "imx93" ]]; then
-    IMX="IMX93"
-  fi
-  if [ -z ${IMX} ]; then
-    error "platform not supported"
-  fi
-  if [ "${IMX}" = "IMX93" ] && [ "${BACKEND}" = "GPU" ]; then
-    error "Invalid combination ${IMX}/${BACKEND}"
-  fi
 
   REQUIRED_CAMERA=${REQUIRED_CAMERA:-1}
   if [ "${REQUIRED_CAMERA}" -gt 0 ] ; then
-    # default camera configuration (can also be overriden by user)
-    declare -A CAMERA_DEVICE_DEFAULT
-    CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
-    CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"
-    local CAMERA_DEVICE_DEFAULT_IMX=${CAMERA_DEVICE_DEFAULT[${IMX}]}
 
-    CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT_IMX}}"
+    CAMERA_DEVICE="${CAMERA_DEVICE:-/dev/video0}"
     if [ ! -c ${CAMERA_DEVICE} ]; then
       local MSG="Camera device ${CAMERA_DEVICE} not found."
       MSG="$MSG Check device and set CAMERA_DEVICE variable appropriately."
@@ -72,10 +50,6 @@ function setup_env {
     GPU2D_API="NONE" ;;
   esac
 
-  # XXX: i.MX93: mute noisy ethos-u kernel driver
-  if [ "${IMX}" = "IMX93" ]; then
-    echo 4 > /proc/sys/kernel/printk
-  fi
 }
 
 # accelerated scaling/conversion
