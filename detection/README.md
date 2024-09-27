@@ -13,5 +13,5 @@ NOTES:
 ## Execution 
 Example script can be called from target console with no further restriction. For examples that support multiple backends, default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```
-# BACKEND=CPU ./detection/example_detection_mobilenet_ssd_v2_tflite.sh
+# IMX=IMX8MP BACKEND=NPU ./detection/example_detection_mobilenet_ssd_v2_tflite_custom.sh
 ```
